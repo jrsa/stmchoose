@@ -9,8 +9,14 @@ dependent on https://github.com/esden/stm32cube-database, pass the path to it
 during construction of objects of the class below 
 """
 
+PIN_LIST_ATTRS = ['Position', 'Name', 'Type']
+
 def pin_tree_to_list(pin_tree_entries):
-    return [[p.attrib['Position'], p.attrib['Name']] for p in pin_tree_entries]    
+    return [[p.attrib[a] for a in PIN_LIST_ATTRS] for p in pin_tree_entries]
+
+def pin_tree_to_list_with_signals(pin_tree_entries):
+    return [([p.attrib[a] for a in PIN_LIST_ATTRS], set([s.attrib["Name"] for s in p.findall("Signal")])) for p in pin_tree_entries]
+
 
 class Stm32Chooser(object):
     def __init__(self, fn):
@@ -49,3 +55,8 @@ class Stm32Chooser(object):
         pin_tree = mcu_tree.findall("Pin")
         return pin_tree_to_list(pin_tree)
 
+    def pinlist_for_part_with_signals(self, part):
+        fn = self.filename_for_part(part)
+        mcu_tree = self.tree_for_filename(fn)
+        pin_tree = mcu_tree.findall("Pin")
+        return pin_tree_to_list_with_signals(pin_tree)
