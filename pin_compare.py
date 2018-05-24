@@ -12,11 +12,12 @@ COMP1 = "F405RGTx"
 COMP2 = "F401R(D-E)Tx"
 
 
-def bi_compare(this, that):
-    unequal_elements = []
-    for i, e in enumerate(this):
-        if e != that[i]:
-            unequal_elements.append((e, that[i]))
+def bi_compare_dict(this, that):
+    unequal_elements = {}
+
+    for k in this.keys():
+        if this[k] != that[k]:
+            unequal_elements[k] = (this[k], that[k])
 
     return unequal_elements
 
@@ -36,10 +37,10 @@ def main(arg):
     comp1_list = chooser.pinlist_for_part(pns[0])
     comp2_list = chooser.pinlist_for_part(pns[1])
 
-    pin_name_diffs = bi_compare(comp1_list, comp2_list)
+    pindiffs = bi_compare_dict(comp1_list, comp2_list)
 
-    for d in pin_name_diffs:
-        print(d)
+    for k in pindiffs.keys():
+        print("pin {}: {} changed to {}".format(k, pindiffs[k][0][0], pindiffs[k][1][0]))
 
 
 if __name__ == '__main__':

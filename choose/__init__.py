@@ -12,11 +12,10 @@ during construction of objects of the class below
 PIN_LIST_ATTRS = ['Position', 'Name', 'Type']
 
 def pin_tree_to_list(pin_tree_entries):
-    return [[p.attrib[a] for a in PIN_LIST_ATTRS] for p in pin_tree_entries]
+    return {int(p.attrib["Position"]) : [p.attrib["Name"], p.attrib["Type"]] for p in pin_tree_entries}
 
 def pin_tree_to_list_with_signals(pin_tree_entries):
-    return [([p.attrib[a] for a in PIN_LIST_ATTRS], set([s.attrib["Name"] for s in p.findall("Signal")])) for p in pin_tree_entries]
-
+    return {int(p.attrib['Position']) : (p.attrib['Name'], p.attrib['Type'], set([s.attrib["Name"] for s in p.findall("Signal")])) for p in pin_tree_entries}
 
 class Stm32Chooser(object):
     def __init__(self, fn):
