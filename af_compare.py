@@ -1,17 +1,16 @@
 import choose
 import sys
 
-# local copy of https://github.com/esden/stm32cube-database
-DB_DIRECTORY = "/Users/jrsa/code/stm32cube-database/db/mcu/"
+import argparse
 
 def main(arg):
-    pns = arg[1:]
+    pns = arg.pns
 
     if len(pns) != 2:
         print("specify 2 part numbers to compare")
         sys.exit(-1)
 
-    chooser = choose.Stm32Chooser(DB_DIRECTORY)
+    chooser = choose.Stm32Chooser()
 
     mcu_pin_lists = {pn : chooser.pindesc_for_part(pn) for pn in pns}
     assert list(mcu_pin_lists.keys()) == pns
@@ -72,17 +71,40 @@ def main(arg):
 
         output_line += '\t'
 
-        if k in signal_intersections.keys():
+        if k in signal_intersections.keys() and args.common:
             output_line += " ".join(signal_intersections[k])
 
-        # if k in comp1_only_signals.keys():
-        #     print(comp1_only_signals[k])
+        if args.exclusions:
+            if k in comp1_only_signals.keys():
+                output_line += ", {} only: ".format(comp1_pn)
+                output_line += " ".join(comp1_only_signals[k])
+
+            if k in comp2_only_signals.keys():
+                output_line += ", {} only: ".format(comp2_pn)
+                output_line += " ".join(comp2_only_signals[k])
 
         print(output_line)
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(
+        description='compare stm32 parts by signals available on their pins')
+
+    parser.add_argument('pns', metavar='pn', type=str, nargs='+', help='part numbers')
+
+    parser.add_argument('-c', '--common', dest='common', action='store_const',
+        const=True, default=False, help='print signals that are available on both chips')
+
+    parser.add_argument('-e', '--exclusions', dest='exclusions', action='store_const',
+        const=True, default=False, help='print signals that are only available on one chip')
+
+    args = parser.parse_args()
+
+    print(args)
+
     try:
-        main(sys.argv)
+        main(args)
     except RuntimeError as e:
         print(e)
+        sys.exit(1)
     sys.exit(0)
