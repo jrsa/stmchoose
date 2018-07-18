@@ -8,6 +8,8 @@ import os.path
 dependent on https://github.com/esden/stm32cube-database, pass the path to it
 during construction of objects of the class below 
 """
+DEFAULT_DATABASE_DIR = '../stm32cube-database/db/mcu/'
+
 
 # source: various STM32 datasheets
 PACKAGES = {
@@ -30,16 +32,16 @@ PinDesc = namedtuple('PinDesc', ['name', 'type', 'signals'])
 PIN_LIST_ATTRS = ['Position', 'Name', 'Type']
 
 def pin_tree_to_list(pin_tree_entries):
-    return {int(p.attrib["Position"]) : [p.attrib["Name"], p.attrib["Type"]] for p in pin_tree_entries}
+    return {p.attrib["Position"] : [p.attrib["Name"], p.attrib["Type"]] for p in pin_tree_entries}
 
 def pin_tree_to_list_with_signals(pin_tree_entries):
-    return {int(p.attrib['Position']) : (p.attrib['Name'], p.attrib['Type'], set([s.attrib["Name"] for s in p.findall("Signal")])) for p in pin_tree_entries}
+    return {p.attrib['Position'] : (p.attrib['Name'], p.attrib['Type'], set([s.attrib["Name"] for s in p.findall("Signal")])) for p in pin_tree_entries}
 
 def pin_tree_to_descs(pin_tree_entries):
-    return {int(p.attrib['Position']) : PinDesc(p.attrib['Name'], p.attrib['Type'], set([s.attrib["Name"] for s in p.findall("Signal")])) for p in pin_tree_entries}
+    return {p.attrib['Position'] : PinDesc(p.attrib['Name'], p.attrib['Type'], set([s.attrib["Name"] for s in p.findall("Signal")])) for p in pin_tree_entries}
 
 class Stm32Chooser(object):
-    def __init__(self, fn):
+    def __init__(self, fn=DEFAULT_DATABASE_DIR):
         self.database_dir = fn
 
     def enum_xmlfiles(self):
@@ -47,9 +49,6 @@ class Stm32Chooser(object):
 
     def filename_for_part(self, part):
         search_pn = Pn(*split_pn(part))
-
-        if search_pn.package in ['K', 'H', 'Y']:
-            raise RuntimeError("BGA packages not supported yet, asked for package type {} ({})".format(search_pn.package, PACKAGES[search_pn.package]))
 
         path = self.database_dir + "/STM32{}.xml".format(part)
         if os.path.exists(path):
