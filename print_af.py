@@ -9,22 +9,15 @@ def main(arg):
     chooser = choose.Stm32Chooser(DB_DIRECTORY)
 
     try:
-        part_fn = chooser.filename_for_part(arg[1])
+        part_fn = arg[1]
     except IndexError as e:
         print("specify a part on the commandline")
         return
 
-    single_tree = chooser.tree_for_filename(part_fn)
+    pin_desc = chooser.pindesc_for_part(part_fn)
 
-    print(part_fn)
-
-    for pin in single_tree.findall("Pin"):
-        afs = []
-        for sig in pin.findall("Signal"):
-            afs.append(sig.attrib["Name"])
-
-        print("{} {} {} {}".format(
-            pin.attrib["Position"], pin.attrib["Name"], pin.attrib["Type"], " ".join(afs)))
+    for k in pin_desc.keys():
+        print(k, '\t', pin_desc[k].name, '\t', ' '.join(pin_desc[k].signals))
 
 
 if __name__ == '__main__':
