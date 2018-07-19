@@ -53,11 +53,15 @@ def main():
     # if these are present they will be used as search terms
     parser = argparse.ArgumentParser()
     [parser.add_argument('--' + f, default=None, dest=f) for f in choose.Pn._fields]
+    parser.add_argument('-d', '--dump', dest='dump', default=None, const=True, action='store_const')
     args = parser.parse_args()
+
+    dargs = vars(args)
+    partargs = {k: dargs[k] for k in dargs if k in choose.Pn._fields}
 
     # use the result from the arg parser, converted to a dictionary, as keyword
     # arguments to construct a Pn
-    searchpn = choose.Pn(**vars(args))
+    searchpn = choose.Pn(**partargs)
 
     # this can move to choose.Pn (should be enforced in Pn creation)
     # this would actually involve subclassing Pn because it is a
@@ -72,10 +76,33 @@ def main():
     # generate the full set of valid Pns from the set of xml filenames in the
     # stm32cube database
     chooser = choose.Stm32Chooser()
+
+    # map globbed xml file paths in the database to part number strings of the form 'F469NIHx'
     base_filenames = [os.path.basename(f)[5:-4] for f in chooser.enum_xmlfiles()]
 
-    # map the base_filenames, of the form 'F469NIHx' to new Pn namedtuple instances.
+    # map the base_filenames, strings of the form 'F469NIHx' to new Pn namedtuple instances.
     all = [choose.Pn(*choose.split_pn(f)) for f in base_filenames]
+
+    if args.dump:
+        values = {}
+        for pn in all:
+            pndict = pn._asdict()
+            for k in pndict:
+                value = pndict[k]
+                try:
+                    values[k].add(value)
+                except KeyError:
+                    # key name not present in dictionary yet
+                    values[k] = {value,}
+                except TypeError:
+                    # value is a list (i think)
+                    for e in value:
+                        values[k].add(e)
+
+        for k in values:
+            print(k, values[k])
+
+        return
 
     # filter the complete set of valid part numbers by the search terms
     results = [pn for pn in all if match(pn, searchpn)]
