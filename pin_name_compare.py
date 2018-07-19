@@ -2,6 +2,11 @@ import choose
 import sys
 
 
+def printdict(d):
+    for k in d:
+        print("{}: {}".format(k, d[k]))
+    print("{} total".format(len(d)))
+
 def main(arg):
     pns = arg[1:]
 
@@ -24,52 +29,40 @@ def main(arg):
     pin_positions = last
 
     diffs = {}
-    diffs2 = {}
-    diffs3 = {}
 
     # for each pin
     for p in pin_positions:
 
         # look at all the MCUs specified for comparison, 2 at a time
         for pn in desc:
-            for other_pn in desc:
-                if pn == other_pn: break
+            for pn2 in desc:
+                if pn == pn2: break
 
-                if desc[pn][p].name != desc[other_pn][p].name:
-                    # gives list of part number, pin name pairs,
-                    # with one element per mcu
-                    pair1 = (pn, desc[pn][p].name)
-                    pair2 = (other_pn, desc[other_pn][p].name)
+                name1 = desc[pn][p].name
+                name2 = desc[pn2][p].name
 
+                if name1 != name2:
                     if p in diffs:
-                        if pair1 not in diffs[p]:
-                            diffs[p].append(pair1)
-                        if pair2 not in diffs[p]:
-                            diffs[p].append(pair2)
+                        if name1 in diffs[p]:
+                            diffs[p][name1].update({pn})
+                        else:
+                            diffs[p][name1] = {pn}
 
+                        if name2 in diffs[p]:
+                            diffs[p][name2].update({pn2})
+                        else:
+                            diffs[p][name2] = {pn2}
                     else:
-                        diffs[p] = [pair1, pair2]
-
-
-
-                    # method 2 gives set of pin names
-                    names = {desc[pn][p].name, desc[other_pn][p].name}
-                    if p in diffs2: 
-                        diffs2[p].update(names)
-                    else:
-                        diffs2[p] = (names)
+                        diffs[p] = {name1: {pn}, name2: {pn2}}
+                else:
+                    if p in diffs:
+                        diffs[p][name1].update({pn, pn2})
 
     # the moment we've all been waiting for
-    for pp in diffs:
-        print("{}: {}".format(pp, diffs[pp]))
-
-    for pp in diffs2:
-        print("{}: {}".format(pp, diffs2[pp]))
-
-    print("{} total differences".format(len(diffs2)))
+    printdict(diffs)
 
 if __name__ == '__main__':
-    try:        
+    try:
         main(sys.argv)
     except RuntimeError as e:
         print("error: {}".format(e))
