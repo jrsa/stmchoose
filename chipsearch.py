@@ -33,11 +33,15 @@ def anyintersect(a, b):
 
 def match(pn1, pn2):
     for i, e in enumerate(pn1):
-        # if the element is None, that means it is effectively a wildcard
+        # if either element is None, that means it is effectively a wildcard
         # search term which was not specified, as a valid Pn will not be None
-        # this is not qutie solid but it's clear enough.
+        # this is not quite solid but it's clear enough.
         if not e or not pn2[i]: continue
 
+        # this catches matches where one element is a list and the other is
+        # a member of that list, eg.:
+        # Pn("F7", None, None, "I", None) and Pn("F7", "67", "N", ["G", "I"], "H")
+        # will return true from anyintersect
         if anyintersect(e, pn2[i]): continue
 
         if e != pn2[i]: return False
