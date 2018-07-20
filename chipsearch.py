@@ -116,7 +116,7 @@ def main():
     results = [pn for pn in all if match(pn, searchpn)]
 
     # the moment we've all been waiting for, print the results
-    for r in results: print(r)
+    for r in results: print(choose.join_pn(r))
 
 if __name__ == '__main__':
     main()
