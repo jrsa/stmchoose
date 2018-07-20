@@ -6,6 +6,7 @@ import choose
 import os
 import sys
 
+from util import printdict
 
 def anyintersect(a, b):
     def make_iterable(x):
@@ -114,8 +115,7 @@ def main():
                     for e in value:
                         values[k].add(e)
 
-        for k in values:
-            print(k, values[k])
+        printdict(values)
 
         return
 
