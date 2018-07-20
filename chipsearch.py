@@ -25,26 +25,31 @@ def anyintersect(a, b):
                 # be compared by intersection
                 return [x]
 
-    # compare any two strings or lists or combination there of, by forcing
+    # compare any two strings, lists or combination thereof, by forcing
     # everything to become a set and using the intersection method.
     # the inner function forces a string to become a single member of a list
     # first to avoid its transformation into a set of characters
     return len(set(make_iterable(a)).intersection(set(make_iterable(b)))) != 0
 
 def match(pn1, pn2):
-    for i, e in enumerate(pn1):
+    """
+    compare two part numbers, giving a positive match when one part
+    """
+    for i, pn1_field in enumerate(pn1):
+        pn2_field = pn2[i]
+
         # if either element is None, that means it is effectively a wildcard
         # search term which was not specified, as a valid Pn will not be None
         # this is not quite solid but it's clear enough.
-        if not e or not pn2[i]: continue
+        if not pn1_field or not pn2_field: continue
 
         # this catches matches where one element is a list and the other is
         # a member of that list, eg.:
         # Pn("F7", None, None, "I", None) and Pn("F7", "67", "N", ["G", "I"], "H")
         # will return true from anyintersect
-        if anyintersect(e, pn2[i]): continue
+        if anyintersect(pn1_field, pn2_field): continue
 
-        if e != pn2[i]: return False
+        if pn1_field != pn2_field: return False
 
     return True
 
@@ -53,7 +58,10 @@ def main():
     # if these are present they will be used as search terms
     parser = argparse.ArgumentParser()
     [parser.add_argument('--' + f, default=None, dest=f) for f in choose.Pn._fields]
-    parser.add_argument('-d', '--dump', dest='dump', default=None, const=True, action='store_const')
+
+    parser.add_argument('-d', '--dump', dest='dump', default=None, const=True
+                            , action='store_const')
+
     args = parser.parse_args()
 
     dargs = vars(args)
