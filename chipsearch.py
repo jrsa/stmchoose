@@ -31,6 +31,7 @@ def anyintersect(a, b):
     # first to avoid its transformation into a set of characters
     return len(set(make_iterable(a)).intersection(set(make_iterable(b)))) != 0
 
+
 def match(pn1, pn2):
     """
     compare two part numbers, giving a positive match when one part
@@ -41,26 +42,31 @@ def match(pn1, pn2):
         # if either element is None, that means it is effectively a wildcard
         # search term which was not specified, as a valid Pn will not be None
         # this is not quite solid but it's clear enough.
-        if not pn1_field or not pn2_field: continue
+        if not pn1_field or not pn2_field:
+            continue
 
         # this catches matches where one element is a list and the other is
         # a member of that list, eg.:
         # Pn("F7", None, None, "I", None) and Pn("F7", "67", "N", ["G", "I"], "H")
         # will return true from anyintersect
-        if anyintersect(pn1_field, pn2_field): continue
+        if anyintersect(pn1_field, pn2_field):
+            continue
 
-        if pn1_field != pn2_field: return False
+        if pn1_field != pn2_field:
+            return False
 
     return True
+
 
 def main():
     # add command line options based on the fields present on the Pn class
     # if these are present they will be used as search terms
     parser = argparse.ArgumentParser()
-    [parser.add_argument('--' + f, default=None, dest=f) for f in choose.Pn._fields]
+    [parser.add_argument('--' + f, default=None, dest=f)
+     for f in choose.Pn._fields]
 
-    parser.add_argument('-d', '--dump', dest='dump', default=None, const=True
-                            , action='store_const')
+    parser.add_argument('-d', '--dump', dest='dump',
+                        default=None, const=True, action='store_const')
 
     args = parser.parse_args()
 
@@ -86,7 +92,8 @@ def main():
     chooser = choose.Stm32Chooser()
 
     # map globbed xml file paths in the database to part number strings of the form 'F469NIHx'
-    base_filenames = [os.path.basename(f)[5:-4] for f in chooser.enum_xmlfiles()]
+    base_filenames = [os.path.basename(f)[5:-4]
+                      for f in chooser.enum_xmlfiles()]
 
     # map the base_filenames, strings of the form 'F469NIHx' to new Pn namedtuple instances.
     all = [choose.Pn(*choose.split_pn(f)) for f in base_filenames]
@@ -101,7 +108,7 @@ def main():
                     values[k].add(value)
                 except KeyError:
                     # key name not present in dictionary yet
-                    values[k] = {value,}
+                    values[k] = {value}
                 except TypeError:
                     # value is a list (i think)
                     for e in value:
@@ -116,7 +123,9 @@ def main():
     results = [pn for pn in all if match(pn, searchpn)]
 
     # the moment we've all been waiting for, print the results
-    for r in results: print(choose.join_pn(r))
+    for r in results:
+        print(choose.join_pn(r))
+
 
 if __name__ == '__main__':
     main()
