@@ -10,11 +10,17 @@ during construction of objects of the class below
 """
 DEFAULT_DATABASE_DIR = '../stm32cube-database/db/mcu/'
 
-Pn = namedtuple('Pn', ['family', 'subtype', 'pincount', 'flashsize', 'package'])
+Pn = namedtuple('Pn', ['family', 'subtype', 'pincount',
+                       'flashsize', 'package'])
+
+PinDesc = namedtuple('PinDesc', ['name', 'type', 'signals'])
+
+
 def split_pn(pn):
     if pn[5] == '(':
         closing_paren = pn.index(')')
-        return (pn[:2], pn[2:4], pn[4:5], pn[6:closing_paren].split("-"), pn[closing_paren+1:closing_paren+2] )
+        return (pn[:2], pn[2:4], pn[4:5], pn[6:closing_paren].split("-"),
+                pn[closing_paren+1:closing_paren+2])
     else:
         return (pn[:2], pn[2:4], pn[4:5], pn[5:6], pn[6:7])
 
@@ -22,12 +28,22 @@ def join_pn(pn):
     try:
         return "".join(pn)
     except TypeError:
-        return join_pn(Pn(**{k: pn._asdict()[k] for k in pn._asdict() if k is not 'flashsize'}, flashsize="({})".format("-".join(pn.flashsize))))
+        str_flashsizes = "({})".format("-".join(pn.flashsize))
+        orig_attrs = pn._asdict()
+        orig_attrs = {k: orig_attrs[k]
+                      for k in orig_attrs
+                      if k is not 'flashsize'}
+        return join_pn(Pn(**orig_attrs, flashsize=str_flashsizes))
 
-PinDesc = namedtuple('PinDesc', ['name', 'type', 'signals'])
 
 def pin_tree_to_descs(pin_tree_entries):
-    return {p.attrib['Position'] : PinDesc(p.attrib['Name'], p.attrib['Type'], set([s.attrib["Name"] for s in p.findall("Signal")])) for p in pin_tree_entries}
+    return {
+        p.attrib['Position']:
+        PinDesc(p.attrib['Name'], p.attrib['Type'], {
+                s.attrib["Name"] for s in p.findall("Signal")})
+        for p in pin_tree_entries
+    }
+
 
 class Stm32Chooser(object):
     def __init__(self, fn=DEFAULT_DATABASE_DIR):
@@ -43,7 +59,8 @@ class Stm32Chooser(object):
         if os.path.exists(path):
             return path
 
-        # see if the part is covered by a file with a (a-b) expression in the filename
+        # see if the part is covered by a file with
+        # an (a-b) expression in the filename
 
         part_glob_expr = "".join(["STM32", part[:5], "*.xml"])
         part_glob = glob.glob(self.database_dir + part_glob_expr)
@@ -51,7 +68,8 @@ class Stm32Chooser(object):
         if len(part_glob) == 1:
             pn_string = os.path.basename(part_glob[0])[5:-4]
             base_pn = Pn(*split_pn(pn_string))
-            if search_pn.flashsize in base_pn.flashsize and search_pn.package == base_pn.package:
+            if (search_pn.flashsize in base_pn.flashsize and
+                    search_pn.package == base_pn.package):
                 return part_glob[0]
 
         else:
@@ -59,7 +77,8 @@ class Stm32Chooser(object):
                 pn_string = os.path.basename(g)[5:-4]
                 base_pn = Pn(*split_pn(pn_string))
 
-                if search_pn.flashsize in base_pn.flashsize and search_pn.package == base_pn.package:
+                if (search_pn.flashsize in base_pn.flashsize and
+                        search_pn.package == base_pn.package):
                     return g
 
         raise RuntimeError("{} not found dog".format(search_pn))
