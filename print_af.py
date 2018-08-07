@@ -1,12 +1,9 @@
 import choose
 import sys
 
-# local copy of https://github.com/esden/stm32cube-database
-DB_DIRECTORY = "/Users/jrsa/code/stm32cube-database/db/mcu/"
-
 
 def main(arg):
-    chooser = choose.Stm32Chooser(DB_DIRECTORY)
+    chooser = choose.Stm32Chooser()
 
     try:
         part_fn = arg[1]
