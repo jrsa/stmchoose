@@ -9,7 +9,13 @@ import sys
 from util import printdict
 
 def anyintersect(a, b):
+    """
+    compare any two strings, lists or combination thereof
+    """
     def make_iterable(x):
+        """
+        return a single element wrapped in a list or collections as is
+        """
         try:
             len(x)
         except TypeError as e:
@@ -26,16 +32,17 @@ def anyintersect(a, b):
                 # be compared by intersection
                 return [x]
 
-    # compare any two strings, lists or combination thereof, by forcing
-    # everything to become a set and using the intersection method.
-    # the inner function forces a string to become a single member of a list
+    # compare two values or collections via set intersection. the inner
+    # function forces a string to become a single member of a list
     # first to avoid its transformation into a set of characters
     return len(set(make_iterable(a)).intersection(set(make_iterable(b)))) != 0
 
 
 def match(pn1, pn2):
     """
-    compare two part numbers, giving a positive match when one part
+    compare two part numbers. return False when specified fields are not
+    equal, return True otherwise (including the case when a field is
+    multiply specified via a collection)
     """
     for i, pn1_field in enumerate(pn1):
         pn2_field = pn2[i]
