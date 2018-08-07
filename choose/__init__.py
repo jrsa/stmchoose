@@ -50,9 +50,14 @@ def join_pn(pn):
 
 def pin_tree_to_descs(pin_tree_entries):
     return {
+        # position is key
         p.attrib['Position']:
-        PinDesc(p.attrib['Name'], p.attrib['Type'], {
-                s.attrib["Name"] for s in p.findall("Signal")})
+        # PinDesc is value
+        PinDesc(p.attrib['Name'],
+                p.attrib['Type'],
+                # signals field is the set of all signal names
+                {s.attrib["Name"]
+                 for s in p.findall("Signal")})
         for p in pin_tree_entries
     }
 
