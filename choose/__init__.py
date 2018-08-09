@@ -2,13 +2,13 @@ import xml.etree.ElementTree
 import re
 import glob
 from collections import namedtuple
-import os.path
+from os.path import join, dirname, basename, exists
 
 """
 dependent on https://github.com/esden/stm32cube-database, pass the path to it
 during construction of objects of the class below 
 """
-DEFAULT_DATABASE_DIR = '../stm32cube-database/db/mcu/'
+DEFAULT_DATABASE_DIR = join(dirname(__file__), "../stm32cube-database/db/mcu/")
 
 Pn = namedtuple('Pn', ['family', 'subtype', 'pincount',
                        'flashsize', 'package'])
@@ -73,7 +73,7 @@ class Stm32Chooser(object):
         search_pn = Pn(*split_pn(part))
 
         path = self.database_dir + "/STM32{}.xml".format(part)
-        if os.path.exists(path):
+        if exists(path):
             return path
 
         # see if the part is covered by a file with
@@ -83,7 +83,7 @@ class Stm32Chooser(object):
         part_glob = glob.glob(self.database_dir + part_glob_expr)
 
         if len(part_glob) == 1:
-            pn_string = os.path.basename(part_glob[0])[5:-4]
+            pn_string = basename(part_glob[0])[5:-4]
             base_pn = Pn(*split_pn(pn_string))
             if (search_pn.flashsize in base_pn.flashsize and
                     search_pn.package == base_pn.package):
@@ -91,7 +91,7 @@ class Stm32Chooser(object):
 
         else:
             for g in part_glob:
-                pn_string = os.path.basename(g)[5:-4]
+                pn_string = basename(g)[5:-4]
                 base_pn = Pn(*split_pn(pn_string))
 
                 if (search_pn.flashsize in base_pn.flashsize and
