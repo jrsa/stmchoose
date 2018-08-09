@@ -1,4 +1,4 @@
-import choose
+from choose.db import Stm32Chooser
 import sys
 
 import re
@@ -16,7 +16,7 @@ def main(arg):
         print("specify 2 part numbers to compare")
         sys.exit(1)
 
-    chooser = choose.Stm32Chooser()
+    chooser = Stm32Chooser()
 
     mcu_pin_lists = {pn : chooser.pindesc_for_part(pn) for pn in pns}
     assert list(mcu_pin_lists.keys()) == pns

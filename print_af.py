@@ -1,9 +1,9 @@
-import choose
+from choose.db import Stm32Chooser
 import sys
 
 
 def main(arg):
-    chooser = choose.Stm32Chooser()
+    chooser = Stm32Chooser()
 
     try:
         part_fn = arg[1]

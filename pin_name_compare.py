@@ -1,6 +1,6 @@
-import choose
 import sys
 
+from choose.db import Stm32Chooser
 from util import printdict
 
 from itertools import combinations

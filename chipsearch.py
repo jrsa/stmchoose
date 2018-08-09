@@ -1,11 +1,10 @@
 #! /usr/bin/env python3
 
 import argparse
-
-import choose
 import os
 import sys
 
+from choose.db import Stm32Chooser
 from util import printdict
 
 def anyintersect(a, b):
@@ -97,7 +96,7 @@ def main():
 
     # generate the full set of valid Pns from the set of xml filenames in the
     # stm32cube database
-    chooser = choose.Stm32Chooser()
+    chooser = Stm32Chooser()
 
     # map globbed xml file paths in the database to part number strings of the form 'F469NIHx'
     base_filenames = [os.path.basename(f)[5:-4]
