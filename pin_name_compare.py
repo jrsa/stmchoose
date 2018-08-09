@@ -1,6 +1,6 @@
 import sys
 
-from choose.db import Stm32Chooser
+from choose.db import CubeDatabase
 from util import printdict
 
 from itertools import combinations
@@ -12,8 +12,8 @@ def main(arg):
         raise RuntimeError("specify at least 2 part numbers to compare")
         sys.exit(1)
 
-    chooser = choose.Stm32Chooser()
-    desc = {pn : chooser.pindesc_for_part(pn) for pn in pns}
+    db = CubeDatabase()
+    desc = {pn : db.pindesc_for_part(pn) for pn in pns}
 
     last = None
     for partnumber in desc:

@@ -62,7 +62,7 @@ def pin_tree_to_descs(pin_tree_entries):
     }
 
 
-class Stm32Chooser(object):
+class CubeDatabase(object):
     def __init__(self, fn=DEFAULT_DATABASE_DIR):
         self.database_dir = fn
 

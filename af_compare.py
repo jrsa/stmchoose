@@ -1,4 +1,4 @@
-from choose.db import Stm32Chooser
+from choose.db import CubeDatabase
 import sys
 
 import argparse
@@ -10,7 +10,7 @@ def main(arg):
         print("specify 2 part numbers to compare")
         sys.exit(-1)
 
-    chooser = Stm32Chooser()
+    chooser = CubeDatabase()
 
     mcu_pin_lists = {pn : chooser.pindesc_for_part(pn) for pn in pns}
     assert list(mcu_pin_lists.keys()) == pns

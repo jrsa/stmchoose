@@ -1,9 +1,9 @@
-from choose.db import Stm32Chooser
+from choose.db import CubeDatabase
 import sys
 
 
 def main(arg):
-    chooser = Stm32Chooser()
+    db = CubeDatabase()
 
     try:
         part_fn = arg[1]
@@ -11,7 +11,7 @@ def main(arg):
         print("specify a part on the commandline")
         return
 
-    pin_desc = chooser.pindesc_for_part(part_fn)
+    pin_desc = db.pindesc_for_part(part_fn)
 
     for k in pin_desc.keys():
         print(k, '\t', pin_desc[k].name, '\t', ' '.join(pin_desc[k].signals))
