@@ -3,6 +3,8 @@ import sys
 
 from util import printdict
 
+from itertools import combinations
+
 def main(arg):
     pns = arg[1:]
 
@@ -30,29 +32,27 @@ def main(arg):
     for p in pin_positions:
 
         # look at all the MCUs specified for comparison, 2 at a time
-        for pn in desc:
-            for pn2 in desc:
-                if pn == pn2: break
+        for pn_pair in combinations(desc.keys(), 2):
+            pn, pn2 = pn_pair
+            name1 = desc[pn][p].name
+            name2 = desc[pn2][p].name
 
-                name1 = desc[pn][p].name
-                name2 = desc[pn2][p].name
-
-                if name1 != name2:
-                    if p in diffs:
-                        if name1 in diffs[p]:
-                            diffs[p][name1].update({pn})
-                        else:
-                            diffs[p][name1] = {pn}
-
-                        if name2 in diffs[p]:
-                            diffs[p][name2].update({pn2})
-                        else:
-                            diffs[p][name2] = {pn2}
+            if name1 != name2:
+                if p in diffs:
+                    if name1 in diffs[p]:
+                        diffs[p][name1].update({pn})
                     else:
-                        diffs[p] = {name1: {pn}, name2: {pn2}}
+                        diffs[p][name1] = {pn}
+
+                    if name2 in diffs[p]:
+                        diffs[p][name2].update({pn2})
+                    else:
+                        diffs[p][name2] = {pn2}
                 else:
-                    if p in diffs:
-                        diffs[p][name1].update({pn, pn2})
+                    diffs[p] = {name1: {pn}, name2: {pn2}}
+            else:
+                if p in diffs:
+                    diffs[p][name1].update({pn, pn2})
 
     # the moment we've all been waiting for
     printdict(diffs)
