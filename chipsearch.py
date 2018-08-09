@@ -104,7 +104,7 @@ def main():
                       for f in chooser.enum_xmlfiles()]
 
     # map the base_filenames, strings of the form 'F469NIHx' to new Pn namedtuple instances.
-    all = [choose.Pn(*choose.split_pn(f)) for f in base_filenames]
+    all = chooser.all_partnumbers()
 
     if args.dump:
         values = {}

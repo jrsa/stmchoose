@@ -69,6 +69,10 @@ class Stm32Chooser(object):
     def enum_xmlfiles(self):
         return sorted(glob.glob(self.database_dir + "/STM32*.xml"))
 
+    def all_partnumbers(self):
+        return [Pn(*split_pn(basename(fn)[5:-4]))
+                for fn in self.enum_xmlfiles()]
+
     def filename_for_part(self, part):
         search_pn = Pn(*split_pn(part))
 
