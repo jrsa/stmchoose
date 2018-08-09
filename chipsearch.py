@@ -98,10 +98,6 @@ def main():
     # stm32cube database
     db = CubeDatabase()
 
-    # map globbed xml file paths in the database to part number strings of the form 'F469NIHx'
-    base_filenames = [os.path.basename(f)[5:-4]
-                      for f in db.enum_xmlfiles()]
-
     # map the base_filenames, strings of the form 'F469NIHx' to new Pn namedtuple instances.
     all = db.all_partnumbers()
 
