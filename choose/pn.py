@@ -31,4 +31,4 @@ def join(pn):
         orig_attrs = {k: orig_attrs[k]
                       for k in orig_attrs
                       if k is not 'flashsize'}
-        return join_pn(Pn(**orig_attrs, flashsize=str_flashsizes))
+        return join(Pn(**orig_attrs, flashsize=str_flashsizes))
