@@ -22,7 +22,7 @@ class CubeDatabase(object):
         return sorted(glob.glob(self.database_dir + "/STM32*.xml"))
 
     def all_partnumbers(self):
-        return [pn.Pn(*pn.split(basename(fn)[5:-4]))
+        return [pn.Pn(*pn.split(pn.strip(basename(fn))))
                 for fn in self.enum_xmlfiles()]
 
     def filename_for_part(self, part):
@@ -39,22 +39,23 @@ class CubeDatabase(object):
         part_glob = glob.glob(self.database_dir + part_glob_expr)
 
         if len(part_glob) == 1:
-            pn_string = basename(part_glob[0])[5:-4]
+            pn_string = pn.strip(basename(part_glob[0]))
             base_pn = pn.Pn(*pn.split(pn_string))
             if (search_pn.flashsize in base_pn.flashsize and
                     search_pn.package == base_pn.package):
                 return part_glob[0]
 
-        else:
+        elif len(part_glob) > 1:
             for g in part_glob:
-                pn_string = basename(g)[5:-4]
+                pn_string = pn.strip(basename(g))
                 base_pn = pn.Pn(*pn.split(pn_string))
 
                 if (search_pn.flashsize in base_pn.flashsize and
                         search_pn.package == base_pn.package):
                     return g
 
-        raise RuntimeError("{} not found dog".format(search_pn))
+        elif len(part_glob) == 0:
+            raise RuntimeError("{} not found dog".format(search_pn))
 
     def tree_for_filename(self, fn):
         data = None

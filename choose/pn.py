@@ -2,6 +2,9 @@ from collections import namedtuple
 
 Pn = namedtuple('Pn', ['family', 'subtype', 'pincount', 'flashsize', 'package'])
 
+def strip(s):
+    return s[5:-4]
+
 def split(pn):
     """
     return a tuple containing part number components. from a string of the
