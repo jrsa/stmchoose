@@ -1,5 +1,4 @@
 import xml.etree.ElementTree
-import re
 import glob
 from collections import namedtuple
 from os.path import join, dirname, basename, exists
@@ -63,7 +62,6 @@ class CubeDatabase(object):
             data = f.read()
             f.close()
 
-        # data = re.sub(' xmlns="[^"]+"', '', data, count=1)
         return xml.etree.ElementTree.fromstring(data)
 
     def pindesc_for_part(self, part):
