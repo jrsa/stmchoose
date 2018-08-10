@@ -4,6 +4,7 @@ from os import path
 import xml.etree.ElementTree
 
 from . import db
+from . import pn
 
 class TestCubeDatabase(unittest.TestCase):
 
@@ -31,7 +32,7 @@ class TestCubeDatabase(unittest.TestCase):
         self.assertNotEqual(len(all_partnumbers), 0)
 
         for e in all_partnumbers:
-            self.assertIsInstance(e, db.Pn)
+            self.assertIsInstance(e, pn.Pn)
 
     def test_filename_for_part(self):
         for pn in ('F469ZIT', 'F722ZET'):
