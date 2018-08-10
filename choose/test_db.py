@@ -25,8 +25,13 @@ class TestCubeDatabase(unittest.TestCase):
         """
         the all_partnumbers method should return an array of some part numbers
         """
-        self.assertIsInstance(self.database.all_partnumbers(), list)
-        self.assertNotEqual(len(self.database.enum_xmlfiles()), 0)
+        all_partnumbers = self.database.all_partnumbers()
+
+        self.assertIsInstance(all_partnumbers, list)
+        self.assertNotEqual(len(all_partnumbers), 0)
+
+        for e in all_partnumbers:
+            self.assertIsInstance(e, db.Pn)
 
     def test_filename_for_part(self):
         for pn in ('F469ZIT', 'F722ZET'):
