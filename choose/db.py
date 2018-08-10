@@ -47,21 +47,6 @@ def join_pn(pn):
                       if k is not 'flashsize'}
         return join_pn(Pn(**orig_attrs, flashsize=str_flashsizes))
 
-
-def pin_tree_to_descs(pin_tree_entries):
-    return {
-        # position is key
-        p.attrib['Position']:
-        # PinDesc is value
-        PinDesc(p.attrib['Name'],
-                p.attrib['Type'],
-                # signals field is the set of all signal names
-                {s.attrib["Name"]
-                 for s in p.findall("Signal")})
-        for p in pin_tree_entries
-    }
-
-
 class CubeDatabase(object):
     def __init__(self, fn=DEFAULT_DATABASE_DIR):
         self.database_dir = fn
@@ -127,4 +112,17 @@ class CubeDatabase(object):
         fn = self.filename_for_part(part)
         mcu_tree = self.tree_for_filename(fn)
         pin_tree = mcu_tree.findall("Pin")
-        return pin_tree_to_descs(pin_tree)
+        return self.pin_tree_to_descs(pin_tree)
+
+    def pin_tree_to_descs(self, pin_tree_entries):
+        return {
+            # position is key
+            p.attrib['Position']:
+            # PinDesc is value
+            PinDesc(p.attrib['Name'],
+                    p.attrib['Type'],
+                    # signals field is the set of all signal names
+                    {s.attrib["Name"]
+                     for s in p.findall("Signal")})
+            for p in pin_tree_entries
+        }
