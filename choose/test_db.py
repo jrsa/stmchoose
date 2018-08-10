@@ -39,12 +39,18 @@ class TestCubeDatabase(unittest.TestCase):
             self.assertIsInstance(fn, str)
             self.assertTrue(path.exists(fn))
 
+        with self.assertRaisesRegex(RuntimeError, 'not found'):
+            self.database.filename_for_part("partnumber_that_doesnt_Exist")
+
     def test_tree_for_filename(self):
         filename = path.join(self.database.database_dir, "STM32F405RGTx.xml")
         self.assertTrue(path.exists(filename))
 
         tree = self.database.tree_for_filename(filename)
         self.assertIsInstance(tree, xml.etree.ElementTree.Element)
+
+        with self.assertRaises(FileNotFoundError):
+            self.database.tree_for_filename("bad_filename")
 
     def test_pindesc_for_part(self):
         pd = self.database.pindesc_for_part('F779NIH')
