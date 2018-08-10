@@ -91,22 +91,12 @@ class CubeDatabase(object):
 
     def tree_for_filename(self, fn):
         data = None
-        try:
-            with open(fn) as f:
-                data = f.read()
-                f.close()
-        except:
-            print("failed opening {}".format(fn))
-            return
-        data = re.sub(' xmlns="[^"]+"', '', data, count=1)
-        tree = None
-        try:
-            tree = xml.etree.ElementTree.fromstring(data)
-        except:
-            print("parse failed")
-            return
+        with open(fn) as f:
+            data = f.read()
+            f.close()
 
-        return tree
+        # data = re.sub(' xmlns="[^"]+"', '', data, count=1)
+        return xml.etree.ElementTree.fromstring(data)
 
     def pindesc_for_part(self, part):
         fn = self.filename_for_part(part)
