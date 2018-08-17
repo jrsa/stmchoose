@@ -4,7 +4,8 @@ import argparse
 import os
 import sys
 
-from choose.db import CubeDatabase, Pn, join_pn
+from choose.db import CubeDatabase
+from choose.pn import Pn, join
 from util import printdict
 
 def anyintersect(a, b):
@@ -126,7 +127,7 @@ def main():
 
     # the moment we've all been waiting for, print the results
     for r in results:
-        print(join_pn(r))
+        print(join(r))
 
 
 if __name__ == '__main__':
