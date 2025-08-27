@@ -19,6 +19,7 @@ class CubeDatabase(object):
         self.database_dir = fn
 
     def enum_xmlfiles(self):
+        assert exists(self.database_dir)
         return sorted(glob.glob(self.database_dir + "/STM32*.xml"))
 
     def all_partnumbers(self):
@@ -56,6 +57,8 @@ class CubeDatabase(object):
 
         elif len(part_glob) == 0:
             raise RuntimeError("{} not found dog".format(search_pn))
+
+        raise RuntimeError('shouldnt be reached')
 
     def tree_for_filename(self, fn):
         data = None
