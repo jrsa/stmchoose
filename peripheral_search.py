@@ -8,7 +8,7 @@ import sys
 from choose.db import CubeDatabase
 
 
-def main(pn, periphs):
+def main(pn, periphs, allocate, flatten):
     db = CubeDatabase()
 
     try:
@@ -36,19 +36,33 @@ def main(pn, periphs):
     available_peripherals = deepcopy(peripherals)
 
     matches = []
-    while requested_peripherals and (next_p := requested_peripherals.pop()):
-        possible_match = next(p for p in available_peripherals if re.match(next_p, p) )
-        available_peripherals.pop(possible_match)
-        matches.append((next_p, possible_match))
+    if allocate:
+        while requested_peripherals and (next_p := requested_peripherals.pop()):
+            possible_match = next(p for p in available_peripherals if re.match(next_p, p) )
+            available_peripherals.pop(possible_match)
+            matches.append((next_p, possible_match))
+    else:
+        if flatten:
+            requested_peripherals = set(requested_peripherals)
+        while requested_peripherals and (next_p := requested_peripherals.pop()):
+            this_matches = [p for p in available_peripherals if re.match(next_p, p)]
+            matches.append((next_p, this_matches))
 
-    pprint(matches)
-
-
-
+    print('peripheral_type,peripheral_instance,peripheral_signal,logical_pin,package_pin')
+    for match, periph in matches:
+        if type(periph) == list:
+            for p in periph:
+                signals = peripherals[p]
+                for signal in signals:
+                    print(f'{match},{p},{",".join(signal)}')
+        else:
+            print(f'{match}\t{periph}')
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser()
     argparser.add_argument('pn')
     argparser.add_argument('periphs', nargs='+')
+    argparser.add_argument('--allocate', action='store_true', default=False)
+    argparser.add_argument('--flatten', action='store_true', default=False)
     args = argparser.parse_args()
     main(**vars(args))
