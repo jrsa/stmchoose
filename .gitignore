@@ -1,2 +1,3 @@
 *.sublime-*
 stm32cube-database/
+**/__pycache__
