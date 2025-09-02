@@ -51,8 +51,9 @@ def main(pn, periphs, allocate, flatten):
     print('peripheral_type,peripheral_instance,peripheral_signal,logical_pin,package_pin')
     for match, periph in matches:
         if type(periph) == list:
+            periph = sorted(periph)
             for p in periph:
-                signals = peripherals[p]
+                signals = sorted(peripherals[p])
                 for signal in signals:
                     print(f'{match},{p},{",".join(signal)}')
         else:
