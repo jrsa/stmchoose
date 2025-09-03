@@ -8,7 +8,7 @@ import sys
 from choose.db import CubeDatabase
 
 
-def main(pn, periphs, allocate, flatten):
+def main(pn, periphs, allocate, flatten, squash):
     db = CubeDatabase()
 
     try:
@@ -48,14 +48,25 @@ def main(pn, periphs, allocate, flatten):
             this_matches = [p for p in available_peripherals if re.match(next_p, p)]
             matches.append((next_p, this_matches))
 
-    print('peripheral_type,peripheral_instance,peripheral_signal,logical_pin,package_pin')
+    # write header
+    if not squash:
+        print('peripheral_type,peripheral_instance,peripheral_signal,logical_pin,package_pin')
+
     for match, periph in matches:
         if type(periph) == list:
             periph = sorted(periph)
             for p in periph:
                 signals = sorted(peripherals[p])
-                for signal in signals:
-                    print(f'{match},{p},{",".join(signal)}')
+                if not squash: # individual signal rows
+                    for signal in signals:
+                        print(f'{match},{p},{",".join(signal)}')
+                else:
+                    signals_by_function = defaultdict(list)
+                    for signal in signals:
+                        signals_by_function[signal[0]].append(signal[1])
+                    for function, signal in signals_by_function.items():
+                        print(f'{match},{p},{function},{",".join(signal)}')
+
         else:
             print(f'{match}\t{periph}')
 
@@ -65,5 +76,6 @@ if __name__ == '__main__':
     argparser.add_argument('periphs', nargs='+')
     argparser.add_argument('--allocate', action='store_true', default=False)
     argparser.add_argument('--flatten', action='store_true', default=False)
+    argparser.add_argument('--squash', action='store_true', default=False)
     args = argparser.parse_args()
     main(**vars(args))
