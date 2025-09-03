@@ -8,7 +8,7 @@ import sys
 from choose.db import CubeDatabase
 
 
-def main(pn, periphs, allocate, flatten, squash):
+def main(pn, periphs, allocate, squash):
     db = CubeDatabase()
 
     try:
@@ -42,8 +42,6 @@ def main(pn, periphs, allocate, flatten, squash):
             available_peripherals.pop(possible_match)
             matches.append((next_p, possible_match))
     else:
-        if flatten:
-            requested_peripherals = set(requested_peripherals)
         while requested_peripherals and (next_p := requested_peripherals.pop()):
             this_matches = [p for p in available_peripherals if re.match(next_p, p)]
             matches.append((next_p, this_matches))
@@ -75,7 +73,6 @@ if __name__ == '__main__':
     argparser.add_argument('pn')
     argparser.add_argument('periphs', nargs='+')
     argparser.add_argument('--allocate', action='store_true', default=False)
-    argparser.add_argument('--flatten', action='store_true', default=False)
     argparser.add_argument('--squash', action='store_true', default=False)
     args = argparser.parse_args()
     main(**vars(args))
