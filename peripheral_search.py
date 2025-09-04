@@ -25,9 +25,8 @@ def main(pn, periphs, allocate, squash):
             if signal_name == 'GPIO':
                 continue
 
-            # TODO: fix signals with multiple _ (just use first _)
-            if len(signal_name_components) != 2:
-                continue
+            # turn pin "function" names like TIM2_CH1 into a pair, preserving function names with underscores such as SAI2_FS_B
+            signal_name_components = [signal_name_components[0], '_'.join(signal_name_components[1:])]
 
             peripheral, signal = signal_name_components
             peripherals[peripheral].append((signal, pin_description.name, pin_number))
