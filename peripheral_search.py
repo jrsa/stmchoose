@@ -8,6 +8,17 @@ import sys
 from choose.db import CubeDatabase
 
 
+def map_signal_specifiers(peripheral):
+    if '=' in peripheral:
+        try:
+            peripheral, signals = peripheral.split('=')
+        except:
+            print('invalid peripheral specification: {peripheral}')
+            raise
+        signals = signals.split(',')
+        return (peripheral, signals)
+    return peripheral
+
 def main(pn, periphs, allocate, squash):
     db = CubeDatabase()
 
@@ -34,14 +45,22 @@ def main(pn, periphs, allocate, squash):
     requested_peripherals = deepcopy(periphs)
     available_peripherals = deepcopy(peripherals)
 
+    requested_peripherals = [
+        map_signal_specifiers(p)
+        for p in requested_peripherals
+    ]
+
     matches = []
-    if allocate:
-        while requested_peripherals and (next_p := requested_peripherals.pop()):
+    while requested_peripherals and (next_p := requested_peripherals.pop()):
+        if type(next_p) != str:
+            next_p, functions = next_p
+            print(functions)
+
+        if allocate:
             possible_match = next(p for p in available_peripherals if re.match(next_p, p) )
             available_peripherals.pop(possible_match)
             matches.append((next_p, possible_match))
-    else:
-        while requested_peripherals and (next_p := requested_peripherals.pop()):
+        else:
             this_matches = [p for p in available_peripherals if re.match(next_p, p)]
             matches.append((next_p, this_matches))
 
